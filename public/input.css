@@ -1,0 +1,33 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+	font-family: monospace;
+}
+html {
+	height: 100%;
+}
+body {
+	height: 100%;
+}
+.background {
+	position: absolute;
+	z-index: -1;
+	left: 0px;
+	top: 0px;
+	background-image: url("/images/map.png");
+	filter: blur(8px);
+	-webkit-filter: blur(8px);
+
+	/* Full height */
+	height: 100%;
+	width: 100%;
+
+	background-position: center;
+	background-repeat: no-repeat;
+	background-size: cover;
+}
+header {
+	background-image: conic-gradient(at bottom right, white, rgb(96, 165, 250));
+}

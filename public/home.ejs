@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Home</title>
+		<link rel="stylesheet" href="output.css" />
+		<script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
+		<script
+			async
+			defer
+			src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD7OAyTsUvEOrfDj2DsbrLeWeIy2CNWA5E&libraries=places&callback=initMap"></script>
+		<script type="module" src="./script.js"></script>
+	</head>
+	<body class="min-h-screen">
+		<header class="bg-blue-400 sticky top-0 z-10 rounded-b-xl text-white">
+			<section
+				class="max-w-6xl mx-auto flex p-4 justify-between items-center">
+				<h1 class="text-3xl font-bold">
+					<a href="">🗺️ CyMap</a>
+				</h1>
+				<div>
+					<button
+						id="mobile-open-button"
+						class="text-3xl sm:hidden focus:outline-none">
+						&#9776;
+					</button>
+					<nav
+						class="hidden sm:block space-x-8 text-lg"
+						aria-label="main">
+						<a
+							href="/home"
+							class="hover:opacity-90 bg-white p-3 text-black rounded-xl"
+							>Home</a
+						>
+						<a
+							href="/logout"
+							class="hover:opacity-90 bg-white p-3 text-black rounded-xl"
+							>Logout</a
+						>
+					</nav>
+				</div>
+			</section>
+		</header>
+		<main
+			class="max-w-6xl mx-auto p-4 min-h-[90vh] flex items-center justify-center">
+			<form
+				action="/home/search"
+				method="post"
+				class="mx-auto w-1/2 flex flex-col gap-3 bg-blue-200 rounded-xl p-6 shadow-2xl">
+				<label for="source" class="w-1/2 text-xl font-bold"
+					>Current Location:
+				</label>
+				<input
+					type="text"
+					name="source"
+					class="bg-white text-[14px] border-black border-2 rounded-xl p-4 to"
+					id="to" />
+				<label for="dest" class="w-1/2 text-xl font-bold">
+					Destination Location:
+				</label>
+				<input
+					id="from"
+					type="text"
+					name="dest"
+					class="bg-white text-[14px] border-black border-2 rounded-xl p-4" />
+				<label for="dest" class="w-1/2 text-xl font-bold">
+					Waypoint:
+				</label>
+				<input
+					id="place-search-midway"
+					type="text"
+					name="midway"
+					class="bg-white text-[14px] border-black border-2 rounded-xl p-4" />
+				<div class="bg-white rounded-xl p-2 space-y-1 mt-2">
+					<span class="text-xl font-bold">Mode of travel: </span
+					><br />
+					<hr class="border-black" />
+					<div class="p-1 space-x-2">
+						<!-- <input type="radio" name="mode" value="TRANSIT" />
+						<label class="text-[14px]">Public Transport</label
+						> -->
+						<input type="radio" name="mode" value="BUS" />
+						<label class="text-[14px]">Bus</label
+						><input type="radio" name="mode" value="TRAIN" />
+						<label class="text-[14px]">Train</label>
+						<input type="radio" name="mode" value="DRIVING" />
+						<label class="text-[14px]">Driving</label>
+						<input type="radio" name="mode" value="WALKING" />
+						<label class="text-[14px]">Walking</label>
+						<input type="radio" name="mode" value="BICYCLYING" />
+						<label class="text-[14px]">Bicycling</label>
+					</div>
+				</div>
+
+				<button
+					class="bg-slate-200 border-black border-2 rounded-xl p-2 w-1/5 my-2 text-lg font-bold">
+					Search</button
+				>
+			</form>
+		</main>
+		<div class="background"></div>
+	</body>
+</html>

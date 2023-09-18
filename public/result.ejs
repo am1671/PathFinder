@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Search Page</title>
+		<link rel="stylesheet" href="../output.css" />
+		<script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
+		<script
+			async
+			defer
+			src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD7OAyTsUvEOrfDj2DsbrLeWeIy2CNWA5E&libraries=places&callback=initMap"></script>
+
+		<script>
+			var data = "<%=data%>".replaceAll("&#34;", '"');
+			var searchDetails = JSON.parse(data);
+			var from = searchDetails.source;
+			var to = searchDetails.dest;
+			var chosenTravel = searchDetails.mode;
+			var midway = searchDetails.midway;
+			let waypoints = [];
+			console.log(searchDetails.source);
+			console.log(searchDetails.dest);
+			console.log(searchDetails.mode);
+			console.log(searchDetails.midway);
+			let map;
+
+			function initMap() {
+				map = new google.maps.Map(document.getElementById("map"), {
+					center: { lat: 19.09513, lng: 72.883 },
+					zoom: 12
+				});
+			}
+
+			window.initMap = initMap;
+
+			const getCurrentLocation = new Promise(function (resolve, reject) {
+				if (navigator.geolocation) {
+					navigator.geolocation.getCurrentPosition(
+						function showLocation(location) {
+							let { latitude, longitude } = location.coords;
+							let userLocation = [latitude, longitude];
+
+							let marker = new google.maps.Marker({
+								position: { lat: latitude, lng: longitude },
+								map: map,
+								animation: google.maps.Animation.DROP,
+								draggable: true
+							});
+
+							resolve(userLocation);
+						}
+					);
+				} else {
+					reject(alert("Could not find your location"));
+				}
+			});
+
+			//send request for directions
+			function start() {
+				getCurrentLocation.then((res) => {
+					const lat = res[0];
+					const lon = res[1];
+					if (midway)
+						waypoints.push({
+							location: midway,
+							stopover: true
+						});
+					let currentLocation = `${lat}, ${lon}`;
+
+					if (from.value === "current location") {
+						from.value = currentLocation;
+					}
+					// let directionsRequest = {
+					// 	origin: searchDetails.source,
+					// 	destination: searchDetails.dest,
+					// 	travelMode: searchDetails.mode
+					// };
+
+					let directionsRequest = {
+						origin: from,
+						destination: to,
+						//   travelMode: String(chosenTravel),
+						waypoints: waypoints,
+						travelMode: google.maps.TravelMode.TRANSIT,
+						transitOptions: {
+							modes: [google.maps.TransitMode.RAIL]
+						}
+					};
+					if (chosenTravel == "BUS") {
+						delete directionsRequest.waypoints;
+
+						directionsRequest.transitOptions.modes[0] =
+							google.maps.TransitMode.BUS;
+						// directionsRequest.travelMode =
+						// 	google.maps.TravelMode.TRANSIT;
+					} else if (chosenTravel == "TRAIN") {
+						delete directionsRequest.waypoints;
+						directionsRequest.transitOptions.modes[0] =
+							google.maps.TransitMode.RAIL;
+						// directionsRequest.travelMode =
+						// 	google.maps.TravelMode.TRANSIT;
+					} else {
+						directionsRequest.travelMode = String(chosenTravel);
+						delete directionsRequest.transitOptions;
+						if (waypoints.length == 0)
+							delete directionsRequest.waypoints;
+						directionsRequest.waypoints = waypoints;
+					}
+
+					let directionsService = new google.maps.DirectionsService();
+					let directionsDisplay =
+						new google.maps.DirectionsRenderer();
+
+					directionsDisplay.setMap(map);
+
+					if (to === "" || from === "" || chosenTravel === "") {
+						alert(
+							"Please add your to and from with a mode of travel"
+						);
+					} else {
+						function calcRoute() {
+							directionsService.route(
+								directionsRequest,
+								function (result, status) {
+									if (status == "OK") {
+										// render route
+										directionsDisplay.setDirections(result);
+
+										// Distance and Duration of route
+
+										const start =
+											document.querySelector("#start");
+										const end =
+											document.querySelector("#end");
+										const duration =
+											document.querySelector("#duration");
+										const distance =
+											document.querySelector("#distance");
+
+										// show output with information on route
+
+										start.textContent = `From: ${from}`;
+										end.textContent = `To: ${to}`;
+										distance.textContent = `Distance: ${result.routes[0].legs[0].distance.text}`;
+										duration.textContent = `Duration: ${result.routes[0].legs[0].duration.text}`;
+									} else {
+										alert(
+											"Failed to get directions! Check your inputted locations"
+										);
+									}
+								}
+							);
+						}
+
+						calcRoute();
+					}
+				});
+			}
+			start();
+
+			// var recordBtn = document.getElementById("record");
+			// recordBtn.addEventListener("click", () => {});
+		</script>
+	</head>
+	<body class="min-h-screen w-full">
+		<header class="bg-blue-400 sticky top-0 z-10 rounded-b-xl text-white">
+			<section
+				class="max-w-6xl mx-auto flex p-4 justify-between items-center">
+				<h1 class="text-3xl font-bold">
+					<a href="">🗺️ CyMap</a>
+				</h1>
+				<div>
+					<button
+						id="mobile-open-button"
+						class="text-3xl sm:hidden focus:outline-none">
+						&#9776;
+					</button>
+					<nav
+						class="hidden sm:block space-x-8 text-lg"
+						aria-label="main">
+						<a
+							href="/home"
+							class="hover:opacity-90 bg-white p-3 text-black rounded-xl"
+							>Home</a
+						>
+						<a
+							href="/logout"
+							class="hover:opacity-90 bg-white p-3 text-black rounded-xl"
+							>Logout</a
+						>
+					</nav>
+				</div>
+			</section>
+		</header>
+		<main class="max-w-6xl mx-auto p-4">
+			<div
+				class="mx-auto p-4 bg-white z-50 rounded-xl max-w-4xl fixed mt-4 translate-x-[-50%] left-1/2 text-black">
+				<p id="start" class="text-lg font-semibold">Source: test</p>
+				<p id="end" class="text-lg font-semibold">Destination: test</p>
+				<p id="duration" class="text-lg font-semibold">Time: test</p>
+				<p id="distance" class="text-lg font-semibold"
+					>Distance: test</p
+				>
+			</div>
+			<div
+				id="map"
+				class="min-h-[85vh] w-full bg-slate-500 rounded-xl shadow-2xl">
+			</div>
+			<button id="record">Record Journey</button>
+		</main>
+	</body>
+</html>
